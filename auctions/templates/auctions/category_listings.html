@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>categories</title>
+</head>
+<body>
+<ul>
+{% for listing in listings %}
+    <li><a href="{% url 'listing_detail' listing.id %}"> {{ listing }}</a> </li>
+{% endfor %}
+</ul>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>listing detail</title>
+    </head>
+    <body>
+        <form method = "POST">
+            {% csrf_token %}
+            {{ watchlist_form.watchlist_state.as_hidden }}
+            {% if is_watchlisted %}
+                <input type="submit" name="change-state" value="remove">
+            {% else %}
+                <input type="submit" name="change-state" value="add">
+            {% endif %}
+        </form>
+
+        <p>{{ object.title }}</p>
+        <p>{{ object.description }}</p>
+        <p>{{ object.starting_bid }}</p>
+        <p>{{ object.current_price }}</p>
+
+
+        {% if win_message %}
+           {{ win_message }}
+        {% else %}
+            <form method="POST">
+                 {% csrf_token %}
+                {{ form.as_div }}
+                <p>{{ bids_count }} bids so far highest bed is {{ object.current_price }} </p>
+                {% if bid_error_message %}
+                    <p>{{ bid_error_message }}</p>
+                {% endif %}
+                <input type="submit">
+            </form>
+        {% endif %}
+
+        <hr>
+            <ul>
+                {% for c in comments %}
+                    <li>
+                        {{ c.commenter }} commented in {{ c.comment_date }}
+                        <br>
+                        {{ c.comment }}
+                    </li>
+                    <hr>
+                {% endfor %}
+            </ul>
+        <hr>
+
+
+        <form method = "post">
+            {% csrf_token %}
+             {{ comment_form.as_div }}
+
+            <input type="submit" name="submit-comment">
+        </form>
+
+
+    </body>
+</html>

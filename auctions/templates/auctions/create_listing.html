@@ -1,0 +1,47 @@
+{% extends "auctions/layout.html" %}
+{% load widget_tweaks %}
+
+
+    {% block title %}
+        Create New Listing
+    {% endblock %}
+    {% block body %}
+
+        <h3>Create Listing</h3>
+        <div class="container">
+        <form method="post" >
+
+
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+
+
+          {% for hidden_field in form.hidden_fields %}
+            {{ hidden_field.errors }}
+            {{ hidden_field }}
+          {% endfor %}
+            {% for field in form.visible_fields %}
+                {% if field.name == "active" %}
+                    <div class="mb-3 form-check">
+
+                        {{ field|add_class:"form-check-input" }}
+                        <label class="form-check-label" for="id_active">{{ field.label }}</label>
+                    </div>
+                {% elif field.name == "category" %}
+                    {% render_field field  class="form-select form-select-lg mb-3" aria-label=".form-select-lg" %}
+                {% else %}
+                    <div class="mb-3">
+                        {{ field.label_tag }}
+                        {{ field|add_class:"form-control" }}
+                        {{ field.help_text|add_class:"form-text" }}
+                    </div>
+                {% endif %}
+
+            {% endfor %}
+                <hr>
+             <button type="submit" class="btn btn-success">create</button>
+
+        </form>
+        </div>
+        <hr>
+    {% endblock %}
