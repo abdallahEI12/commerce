@@ -1,14 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>watchlist</title>
-</head>
-<body>
-    <ul >
-    {% for item in user_watchlist %}
-        <li><a href="{% url 'listing_detail' item.id  %}"> {{ item }} </a></li>
-    {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends "auctions/layout.html" %}
+{% load widget_tweaks %}
+
+{% block title %}
+    watchlist
+{% endblock %}
+
+{% block body %}
+    <h2>Your Watchlist</h2>
+    <hr>
+
+    <div class = "row mx-3">
+        {% for listing in listings %}
+            <div  class="card mx-3" style="width: 18rem;">
+              <img src="{{ listing.image }}" class="card-img-top" alt="...">
+              <div class="card-body">
+                <h5 class="card-title">{{ listing.title }}</h5>
+                <p class="card-text">{{ listing.description }}</p>
+                <p class="card-text">{{ listing.current_price }}</p>
+                <a href="{% url 'listing_detail' listing.pk %}" class="btn btn-primary">more details</a>
+              </div>
+            </div>
+        {% endfor %}
+        </div>
+{% endblock %}

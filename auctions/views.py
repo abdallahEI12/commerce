@@ -1,5 +1,6 @@
 import decimal
-
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
@@ -7,7 +8,7 @@ from django.db.models import Max
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, FormMixin
+from django.views.generic.edit import CreateView, FormMixin,UpdateView
 from django.views.generic.list import ListView
 
 from .forms import ListingCreateForm,listing_create_form, ListingBidForm, creator_listing_detail_form, comment_form, watchlist_form
@@ -97,7 +98,7 @@ class Newlisting(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class listing_detail(LoginRequiredMixin, DetailView, FormMixin):
+class listing_detail(DetailView, FormMixin):
     login_url = "login"
     redirect_field_name = "next"
     model = listings
@@ -115,7 +116,7 @@ class listing_detail(LoginRequiredMixin, DetailView, FormMixin):
     def get_initial(self):
         if self.request.user == self.object.created_by:
             return {"active": self.object.active}
-
+    @method_decorator(login_required(redirect_field_name="next",login_url="login"))
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
@@ -124,13 +125,6 @@ class listing_detail(LoginRequiredMixin, DetailView, FormMixin):
                                               comment=request.POST.get("comment"),
                                               listing=self.object)
             comment.save()
-            return HttpResponseRedirect(reverse("listing_detail", kwargs={"pk": self.object.id}))
-        elif "change-state" in request.POST:
-            if request.POST.get("change-state") == "remove":
-                User.objects.get(id = self.request.user.id).watch_list.remove(self.object)
-            else:
-                User.objects.get(id=self.request.user.id).watch_list.add(self.object)
-
             return HttpResponseRedirect(reverse("listing_detail", kwargs={"pk": self.object.id}))
         else:
             if form.is_valid() and self.request.user != self.object.created_by:
@@ -150,11 +144,12 @@ class listing_detail(LoginRequiredMixin, DetailView, FormMixin):
         context = super(listing_detail, self).get_context_data(**kwargs)
         if not self.object.active and self.request.user != self.object.created_by and self.user_max_bid() == self.listing_max_bid():
             context["win_message"] = "congrats you won!"
+
         context["comment_form"] = comment_form()
+
         context["comments"] = comments.objects.filter(listing=self.object)
         context["bids_count"] = len(bids.objects.filter(listing=self.object))
         context["is_watchlisted"] = self.is_watchlisted()
-        context['watchlist_form'] = watchlist_form({"watchlist_state": self.is_watchlisted()})
         return context
 
     def form_valid(self, form):
@@ -209,14 +204,29 @@ class listing_detail(LoginRequiredMixin, DetailView, FormMixin):
         else:
             return False
 
+class togglewatchlist(LoginRequiredMixin,UpdateView):
+    login_url = "login"
+    redirect_field_name = "next"
+    def get_object(self):
+        return User(id= self.request.user.id)
+    def get_listing(self):
+        return listings(id=self.kwargs['listing_id'])
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect(reverse("listing_detail",kwargs={"pk":self.kwargs["listing_id"]}))
+    def post(self, request, *args, **kwargs):
+        user = self.get_object()
+        if "change-state" in self.request.POST and self.request.POST.get("change-state") == "remove":
+            user.watch_list.remove(self.get_listing())
+        elif "change-state" in self.request.POST and self.request.POST.get("change-state") == "add":
+            user.watch_list.add(self.get_listing())
+        return HttpResponseRedirect(reverse("listing_detail", kwargs={"pk":self.get_listing().id}))
 
 class watchlist(ListView):
     template_name = "auctions/watchlist.html"
-    context_object_name = "user_watchlist"
+    context_object_name = "listings"
 
     def get_queryset(self):
         return User.objects.get(username=self.request.user).watch_list.all()
-
 
 
 class category_listings(ListView):
@@ -225,4 +235,15 @@ class category_listings(ListView):
 
 
     def get_queryset(self):
-        return listings.objects.filter(category = self.kwargs["pk"])
+        return listings.objects.filter(category = self.kwargs["pk"], active=True)
+
+class all_categories(ListView):
+    model = categories
+    template_name = "auctions/categories.html"
+    context_object_name = "categories"
+
+
+
+
+
+

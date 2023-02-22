@@ -1,11 +1,23 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+    <h2>Active Listings
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                categories
+            </button>
+            <ul class="dropdown-menu">
+                {% for category in categories %}
+                    <li><a class="dropdown-item" href="{% url 'category_listings' category.id %}">{{ category }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </h2>
     <hr>
-        <div class = "row mx-2">
+
+        <div class = "row mx-3">
         {% for listing in active_listings %}
-            <div  class="card mx-2" style="width: 18rem;">
+            <div  class="card mx-3" style="width: 18rem;">
               <img src="{{ listing.image }}" class="card-img-top" alt="...">
               <div class="card-body">
                 <h5 class="card-title">{{ listing.title }}</h5>

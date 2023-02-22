@@ -32,18 +32,8 @@
                     <a class="nav-link" href="{% url 'watchlist' %}">watchlist</a>
                  </li>
                 <li class="nav-item">
-                    <div class="dropdown">
-                          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            categories
-                          </button>
-                          <ul class="dropdown-menu">
-                          {% for category in categories %}
-                            <li><a class="dropdown-item" href="{% url 'category_listings' category.id %}">{{ category }}</a></li>
-                          {% endfor %}
-                          </ul>
-                    </div>
-                </li>
-
+                    <a class="nav-link" href="{% url 'categories' %}">categories</a>
+                 </li>
             {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'login' %}">Log In</a>
