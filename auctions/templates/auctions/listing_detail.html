@@ -21,6 +21,7 @@
                 <hr>
                 <h5 class="card-title">current price = {{ object.current_price }}</h5>
                 <hr>
+                <h5 class="card-title">owner ==> {{ object.created_by }}</h5>
 
             </div>
         </div>
@@ -52,7 +53,12 @@
                         </span>
                       </div>
                     </div>
+                {% elif form.active %}
+                    <div class="mb-3 form-check">
 
+                        {{ form.active|add_class:"form-check-input" }}
+                        <label class="form-check-label" for="id_active">{{ form.active.label }}</label>
+                    </div>
                 {% endif %}
 
                 <p>{{ bids_count }} bids so far highest bed is {{ object.current_price }} </p>

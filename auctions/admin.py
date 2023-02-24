@@ -5,3 +5,5 @@ from auctions.models import *
 admin.site.register(User)
 admin.site.register(listings)
 admin.site.register(categories)
+admin.site.register(bids)
+admin.site.register(comments)
