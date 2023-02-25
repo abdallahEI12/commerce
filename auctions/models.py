@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import authenticate
 from django.db import models
 from django.shortcuts import reverse
+from django.db.models import Max
 
 
 class User(AbstractUser):
@@ -42,6 +43,10 @@ class listings(models.Model):
 
     def get_absolute_url(self):
         return reverse("index")
+
+    def highest_bid(self):
+        return bids.objects.filter(listing=self).aggregate(Max('bid_value'))["bid_value__max"]
+
 
 class bids(models.Model):
     #each user can place pid on listing
