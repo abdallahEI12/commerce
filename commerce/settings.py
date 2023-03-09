@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'rest_framework',
     'auctions_api',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
