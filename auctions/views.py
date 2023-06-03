@@ -4,7 +4,6 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
-from django.db.models import Max
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic.detail import DetailView

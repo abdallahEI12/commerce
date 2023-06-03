@@ -80,6 +80,7 @@ class listingdetailview(mixins.ListModelMixin,mixins.RetrieveModelMixin,generics
             return self.list(request)
 
 
+
 # A viewset for the authenticated users only in which they can create a listing
 
 class ListingCreateView(mixins.CreateModelMixin,generics.GenericAPIView):
